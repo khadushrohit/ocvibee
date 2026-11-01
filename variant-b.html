@@ -1,0 +1,776 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Weave · Variant B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+@font-face{font-family:"Right Grotesk";font-weight:500;font-display:swap;src:local("PP Right Grotesk Medium"),local("PPRightGrotesk-Medium"),url(fonts/PPRightGrotesk-Medium.otf) format("opentype")}
+@font-face{font-family:"Right Grotesk Compact";font-weight:900;font-display:swap;src:local("PP Right Grotesk Compact Black"),local("PPRightGrotesk-CompactBlack"),url(fonts/PPRightGrotesk-CompactBlack.otf) format("opentype")}
+
+:root{
+  --white:#fff; --black:#131313; --true-black:#000;
+  --navy:#0b183a; --orange:#ff6900; --orange-light:#ff7b00; --orange-soft:#fcb558;
+  --blue:#004fff; --tan:#e5e3d0; --tan-light:#f7f7eb; --gray:#6d6d6d; --gray-light:#f1f1f1;
+  --glass-fill:rgba(255,255,255,.08); --glass-stroke:rgba(255,255,255,.16); --glass-hi:rgba(255,255,255,.18);
+  --glass-dark:rgba(19,19,19,.45); --shadow-soft:rgba(0,0,0,.15);
+  --display:"Right Grotesk","Outfit",sans-serif;
+  --compact:"Right Grotesk Compact","Outfit",sans-serif;
+  --body:"Outfit",system-ui,sans-serif;
+  --ease:cubic-bezier(.2,.7,.1,1);
+  --wrap:1164px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+body{font-family:var(--body);color:var(--black);background:var(--navy);overflow-x:hidden}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.wrap{width:min(var(--wrap),100% - 32px);margin-inline:auto}
+
+/* split text */
+.line{display:block;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em}
+.line>span{display:inline-block;will-change:transform}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;height:56px;padding:0 40px;border-radius:60px;font-weight:500;font-size:18px;line-height:24px;white-space:nowrap;position:relative;overflow:hidden;isolation:isolate;transition:transform .4s var(--ease)}
+.btn::before{content:"";position:absolute;inset:0;border-radius:inherit;background:currentColor;opacity:0;transform:scale(.6);transition:opacity .4s var(--ease),transform .5s var(--ease);z-index:-1}
+.btn:hover::before{opacity:.12;transform:scale(1)}
+.btn:active{transform:scale(.97)}
+.btn-blue{background:var(--blue);color:var(--white)}
+.btn-white{background:var(--white);color:var(--blue)}
+.btn .lbl{display:inline-block;position:relative;overflow:hidden}
+.btn .lbl span{display:block;transition:transform .45s var(--ease)}
+.btn .lbl span+span{position:absolute;inset:0;transform:translateY(110%)}
+.btn:hover .lbl span:first-child{transform:translateY(-110%)}
+.btn:hover .lbl span+span{transform:translateY(0)}
+
+/* glass pill */
+.glass{position:relative;display:inline-flex;align-items:center;gap:10px;border:1px solid var(--glass-stroke);border-radius:999px;box-shadow:0 8px 24px var(--shadow-soft),inset 0 1px 0 var(--glass-hi);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--orange);flex:none;position:relative}
+.dot.pulse::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--orange);animation:pulse 2s var(--ease) infinite}
+@keyframes pulse{0%{transform:scale(1);opacity:.7}100%{transform:scale(3.2);opacity:0}}
+
+/* ---------- NAV ---------- */
+.nav{position:fixed;inset:0 0 auto;height:64px;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:0 24px 0 32px;background:rgba(11,24,58,.94);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 1px 0 rgba(255,255,255,.08)}
+.nav-burger{display:none;align-items:center;gap:10px;height:36px;padding:0 14px 0 12px;border-radius:36px;background:rgba(255,255,255,.12);color:#fff;font-size:14px;font-weight:500}
+.nav-burger .bars{position:relative;width:16px;height:12px}
+.nav-burger i{position:absolute;left:0;right:0;height:1.5px;background:#fff;transition:transform .4s var(--ease),top .4s var(--ease)}
+.nav-burger i:first-child{top:2px}.nav-burger i:last-child{top:9px}
+.menu-open .nav-burger i:first-child{top:5.5px;transform:rotate(45deg)}
+.menu-open .nav-burger i:last-child{top:5.5px;transform:rotate(-45deg)}
+.menu{position:fixed;inset:64px 0 0;z-index:49;background:var(--navy);padding:24px 16px 40px;display:flex;flex-direction:column;gap:4px;clip-path:inset(0 0 100% 0);transition:clip-path .7s var(--ease);visibility:hidden}
+.menu-open .menu{clip-path:inset(0 0 0 0);visibility:visible}
+.menu a{color:#fff;font-family:var(--display);font-weight:500;font-size:36px;line-height:1.3;letter-spacing:-1px;padding:6px 0;opacity:0;transform:translateY(20px);transition:opacity .5s,transform .6s var(--ease)}
+.menu-open .menu a{opacity:1;transform:none}
+.menu a:nth-child(2){transition-delay:.04s}.menu a:nth-child(3){transition-delay:.08s}.menu a:nth-child(4){transition-delay:.12s}.menu a:nth-child(5){transition-delay:.16s}.menu a:nth-child(6){transition-delay:.2s}.menu a:nth-child(7){transition-delay:.24s}
+.menu .pill{margin-top:24px;align-self:flex-start;font-family:var(--body);font-size:16px;letter-spacing:0;padding:12px 20px}
+.nav-left{display:flex;align-items:center;gap:28px}
+.nav-links{display:flex;gap:4px}
+.nav-links a{display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:6px;color:#fff;font-size:14px;font-weight:500;line-height:20px;transition:background .3s}
+.nav-links a:hover{background:rgba(255,255,255,.08)}
+.nav-links svg{opacity:.7}
+.nav-right{display:flex;gap:16px}
+.pill{padding:8px 14px;border-radius:36px;font-size:14px;font-weight:500;line-height:20px;color:#fff;transition:transform .3s var(--ease),filter .3s}
+.pill:hover{transform:translateY(-1px);filter:brightness(1.08)}
+.pill-ghost{background:rgba(255,255,255,.12)}
+.pill-orange{background:var(--orange)}
+
+/* ---------- HERO ---------- */
+.hero{background:var(--navy);padding-top:136px;color:#fff}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:40px;padding:0 32px}
+.hero h1{font-family:var(--compact);font-weight:900;font-size:clamp(56px,8.2vw,124px);line-height:.92;text-transform:uppercase;letter-spacing:-.01em;max-width:900px}
+.hero h1 em{font-style:normal;color:var(--orange-light)}
+.aside{width:376px;flex:none;display:flex;flex-direction:column;gap:24px;align-items:flex-start;padding-top:20px}
+.aside .glass{padding:4px 10px;background:var(--glass-fill);font-size:16px;line-height:24px}
+.aside p{font-size:18px;line-height:27px}
+.hero-card-band{margin-top:64px;padding:0 32px;background:linear-gradient(var(--navy) 45%,var(--white) 45%)}
+.hero-card{position:relative;height:520px;border:8px solid var(--navy);border-radius:24px;overflow:hidden;background:var(--black);box-shadow:0 8px 24px var(--shadow-soft)}
+.hero-card img{position:absolute;left:0;top:-15%;width:100%;height:130%;object-fit:cover;object-position:50% 72%;will-change:transform}
+
+/* ---------- HERO B ---------- */
+.hero-b{background:var(--navy);padding:64px 24px 0}
+.hb-card{position:relative;height:780px;max-height:calc(100vh - 88px);min-height:620px;border:2px solid rgba(179,129,43,.5);border-radius:12px;overflow:hidden;background:var(--black);color:#fff}
+.hb-card>img{max-width:none;position:absolute;left:-17.5%;bottom:-20.3%;width:129%;height:208.8%;object-fit:cover;object-position:50% 100%;will-change:transform}
+.hb-dim{position:absolute;inset:0;background:rgba(0,0,0,.1)}
+.hb-fade{position:absolute;left:0;right:0;bottom:0;height:124.6%;opacity:.5;background:linear-gradient(180deg,rgba(0,0,0,.35) 2.67%,rgba(0,0,0,0) 24.09%,rgba(0,0,0,.15) 61.07%,rgba(0,0,0,.85) 85.4%,#131313 100%)}
+.hb-focus{position:absolute;left:50%;bottom:-18.2%;width:114.2%;height:103%;transform:translateX(-50%);background:radial-gradient(50% 50% at 50% 50%,rgba(0,0,0,.55),rgba(0,0,0,0))}
+.hb-content{position:absolute;left:50%;bottom:9%;transform:translateX(-50%);width:min(742px,100% - 32px);display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
+.hb-content .glass{padding:4px 10px;background:var(--glass-fill);font-size:16px;line-height:24px}
+.hb-content h1{font-family:var(--display);font-weight:500;font-size:48px;line-height:1;letter-spacing:-.5px}
+.hb-content p{font-size:20px;font-weight:500;line-height:29px;max-width:604px}
+.hb-content .btn{margin-top:24px}
+
+/* ---------- S2 INTRO ---------- */
+.s2{background:var(--white);padding:150px 0}
+.intro{display:flex;justify-content:space-between;align-items:flex-end;gap:40px}
+.h-56{font-family:var(--display);font-weight:500;font-size:56px;line-height:1.1;letter-spacing:-1px}
+.intro .h-56{max-width:542px;color:var(--true-black)}
+.intro p{max-width:460px;font-size:20px;line-height:32px;color:var(--true-black)}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:80px}
+.fact{--draw:1;position:relative;padding-top:28px;display:flex;flex-direction:column;justify-content:space-between;gap:12px}
+.fact::before{content:"";position:absolute;inset:0 0 auto;height:1px;background:var(--orange-light);transform-origin:left;transform:scaleX(var(--draw,1))}
+.fact b{font-family:var(--display);font-weight:500;font-size:36px;line-height:43.2px;letter-spacing:-1px;color:var(--black)}
+.fact>span{font-size:18px;line-height:26px;color:var(--gray);max-width:240px}
+
+.s2-b{background:var(--navy)}
+.s2-b .intro .h-56{color:var(--orange-light)}
+.s2-b .intro p,.s2-b .fact b,.s2-b .fact>span{color:#fff}
+
+/* ---------- S3 BUILDING ---------- */
+.s3{background:var(--tan-light);padding:150px 0}
+.h-80{font-family:var(--display);font-weight:500;font-size:80px;line-height:1;letter-spacing:-2px;color:var(--orange)}
+.s3 .h-80{max-width:675px}
+.blocks{display:flex;flex-direction:column;gap:80px;margin-top:80px}
+.block{display:flex;align-items:center;gap:40px}
+.block.rev{flex-direction:row-reverse}
+.block .media{position:relative;width:762px;flex:none;height:480px;overflow:hidden;clip-path:inset(0 0 0 0)}
+.block .media img{position:absolute;left:0;top:-8%;width:100%;height:116%;object-fit:cover;will-change:transform}
+.block .media .glass{position:absolute;left:24px;bottom:24px;padding:9px 16px 9px 14px;background:var(--glass-dark);color:#fff;font-size:14px;font-weight:500;line-height:20px}
+.block .text{flex:1;display:flex;flex-direction:column;gap:20px;color:var(--black)}
+.block h3{font-family:var(--display);font-weight:500;font-size:36px;line-height:43.2px;letter-spacing:-1px;max-width:350px}
+.block p{font-size:18px;line-height:23.4px}
+
+/* CTA band */
+.cta-band{position:relative;overflow:hidden;background:var(--orange);border-radius:4px;padding:48px 62px;display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap;color:#fff;margin-top:80px}
+.cta-band .c1{position:absolute;right:-80px;top:-120px;width:360px;height:360px;border-radius:50%;background:var(--orange-light)}
+.cta-band .c2{position:absolute;right:180px;bottom:-140px;width:240px;height:240px;border-radius:0 9999px 9999px 0;background:var(--orange-light)}
+.cta-band .c3{position:absolute;right:40px;bottom:-60px;width:180px;height:180px;border-radius:50%;border:1px solid #ffb400}
+.cta-band .t{position:relative;display:flex;flex-direction:column;gap:6px;flex:1;min-width:280px}
+.cta-band h4{font-family:var(--display);font-weight:500;font-size:28px;line-height:33.6px;letter-spacing:-1px}
+.cta-band p{font-size:18px;line-height:23.4px;max-width:700px}
+.cta-band .btn{position:relative}
+
+/* ---------- S4 DISTRICT ---------- */
+.s4{position:relative;background:var(--navy);padding:150px 0;overflow:hidden}
+.map-card{display:flex;justify-content:space-between;align-items:stretch;gap:40px;padding:48px;border-radius:24px;background:var(--orange-soft)}
+.map-copy{display:flex;flex-direction:column;justify-content:space-between;gap:32px;align-items:flex-start}
+.map-copy h2{font-family:var(--display);font-weight:500;font-size:64px;line-height:1;letter-spacing:-2px;color:var(--true-black);max-width:500px}
+.map-copy p{margin-top:16px;font-size:20px;line-height:30px;color:var(--navy);max-width:420px}
+.map{position:relative;width:510px;height:417px;flex:none;border-radius:17px;overflow:hidden}
+.map img{max-width:none;position:absolute;inset:-4%;width:108%;height:108%;object-fit:cover;object-position:42% 0;will-change:transform}
+
+.acc{position:relative;margin-top:64px}
+.glow{position:absolute;left:6%;width:760px;height:520px;border-radius:50%;background:radial-gradient(closest-side,rgba(252,181,88,.32),rgba(252,181,88,0));filter:blur(40px);pointer-events:none;z-index:0;top:0}
+.row{position:relative;z-index:1;display:flex;gap:24px;align-items:flex-start;padding:32px 48px;border:1px solid var(--glass-stroke);border-bottom:0;border-radius:24px 24px 0 0;background:var(--glass-fill);box-shadow:inset 0 1px 0 var(--glass-hi);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);cursor:pointer;color:#fff;transition:background .4s}
+.row:last-child{border-bottom:1px solid var(--glass-stroke);border-radius:24px}
+.row:hover{background:rgba(255,255,255,.11)}
+.row .label{width:531px;flex:none;display:flex;gap:12px;align-items:flex-start}
+.row .num{font-size:14px;line-height:18.2px;padding-top:6px;transition:color .3s}
+.row .ttl{font-size:28px;font-weight:500;line-height:36.4px}
+.row .detail{flex:1;min-width:0}
+.row .sum{font-size:24px;line-height:31.2px;color:rgba(255,255,255,.6)}
+.row .sum b,.row .stat b{font-weight:400;color:var(--orange-soft)}
+.row .panel{height:0;overflow:hidden}
+.row .panel-in{display:flex;flex-direction:column;gap:20px;padding-bottom:8px}
+.row .panel img{width:100%;height:320px;object-fit:cover;border-radius:10px}
+.row .stat{display:flex;align-items:center;gap:24px}
+.row .stat b{font-size:64px;line-height:64.8px;white-space:nowrap}
+.row .stat.sm{align-items:flex-start}
+.row .stat.sm b{font-size:40px;line-height:48px}
+.row .stat span{font-size:18px;line-height:27px}
+.row .ico{font-size:28px;font-weight:300;line-height:36.4px;width:16px;text-align:center;transition:transform .5s var(--ease),color .3s}
+.row.open .num,.row.open .ico{color:var(--orange-soft)}
+.row .ico::before{content:"+"}.row.open .ico::before{content:"\2013"}.row.open .ico{transform:rotate(180deg)}
+
+/* ---------- S5 MEANS ---------- */
+.s5{background:var(--tan-light);padding:150px 0}
+.s5 .wrap{width:min(960px,100% - 32px)}
+.s5 .h-56{color:var(--true-black);max-width:555px}
+.s5 .sub{margin-top:16px;font-size:20px;line-height:32px;color:var(--navy)}
+.grid{display:grid;grid-template-columns:460px 460px;justify-content:space-between;row-gap:64px;margin-top:80px}
+.point{display:flex;flex-direction:column;gap:32px;color:var(--navy)}
+.point svg{width:64px;height:64px}
+.point h3{font-size:24px;line-height:28.8px;font-weight:700;margin-bottom:20px}
+.point p{font-size:18px;line-height:28px}
+
+/* ---------- S6 TIMELINE ---------- */
+.s6{background:var(--white);padding:150px 0}
+.s6 .h-80{max-width:860px}
+.s6 .sub{margin-top:24px;font-size:20px;line-height:32px;color:var(--true-black);max-width:773px}
+.timeline{display:flex;gap:40px;align-items:flex-end;margin-top:80px;height:480px}
+.stage{position:relative;flex:1;border-radius:24px;padding:32px;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;transform-origin:bottom}
+.stage .floors{position:absolute;left:0;right:0;top:0;bottom:142px;pointer-events:none;background:repeating-linear-gradient(to top,var(--fl) 0 1px,transparent 1px 48px)}
+.stage .head{position:relative;display:flex;flex-direction:column;gap:12px}
+.stage .meta{display:flex;align-items:center;gap:8px;font-size:18px;opacity:.6}
+.stage .meta .dot{width:8px;height:8px;opacity:1}
+.stage .yr{font-size:40px;line-height:48px;white-space:nowrap}
+.stage p{position:relative;font-size:18px}
+.st1{height:300px;background:var(--navy);color:#fff;--fl:rgba(255,255,255,.07)}
+.st1 p{opacity:.85}
+.st2{height:390px;background:var(--tan);color:var(--navy);--fl:rgba(11,24,58,.06)}
+.st3{height:480px;background:var(--tan-light);color:var(--navy);--fl:rgba(11,24,58,.06)}
+.st2 p,.st3 p{opacity:.75}
+.partners{display:flex;align-items:center;justify-content:space-between;gap:32px;padding:32px 0;margin-top:80px}
+.partners>span{font-size:18px;line-height:23.4px;color:var(--gray);white-space:nowrap}
+.logos{display:flex;align-items:center;gap:64px}
+.logos img{transition:opacity .3s,transform .4s var(--ease)}
+.logos img:hover{transform:translateY(-2px)}
+.s6 .cta-band{margin-top:80px}
+
+/* ---------- S7 FAQ ---------- */
+.s7{background:var(--tan-light);padding:150px 0}
+.faq-cols{display:flex;gap:100px;align-items:flex-start}
+.faq-cols .h-56{width:400px;flex:none;color:var(--orange);position:sticky;top:120px}
+.faq{flex:1;border-top:1px solid var(--black)}
+.q{border-bottom:1px solid var(--black)}
+.q button{width:100%;display:flex;justify-content:space-between;align-items:center;gap:24px;padding:28px 0;text-align:left;font-size:20px;font-weight:500;line-height:30px;color:var(--black)}
+.q button i{font-style:normal;font-size:28px;font-weight:400;line-height:30px;transition:transform .5s var(--ease),color .3s}
+.q button i::before{content:"+"}.q.open button i::before{content:"\2013"}.q.open button i{color:var(--orange);transform:rotate(180deg)}
+.q .a{height:0;overflow:hidden}
+.q .a-in{padding:0 0 28px;max-width:600px;font-size:18px;line-height:28px;color:var(--black)}
+.q.open .a-in{max-width:none}
+.q .a-in a{display:inline-block;margin-top:12px;color:var(--orange);font-weight:500}
+
+/* ---------- S8 BROCHURE ---------- */
+.s8{position:relative;background:var(--tan-light);padding:69px 0 120px;overflow:hidden}
+.s8 .band{position:absolute;left:0;right:0;top:133px;bottom:0;background:var(--navy);transform-origin:bottom}
+.s8 .wrap{position:relative;display:flex;justify-content:space-between;gap:40px}
+.s8-left{max-width:628px;color:#fff}
+.s8 h2{font-family:var(--compact);font-weight:900;font-size:64px;line-height:1;text-transform:uppercase;letter-spacing:-.005em}
+.s8 h2 .l1{color:var(--navy)}
+.s8 h2 .l2{color:var(--tan-light);margin-top:10px}
+.s8-left .lead{margin-top:20px;font-size:18px;line-height:1.3;max-width:481px}
+.includes{margin-top:40px}
+.includes>span{display:block;font-size:14px;font-weight:500;line-height:20px;letter-spacing:.56px;opacity:.6;margin-bottom:16px}
+.tiles{display:flex;gap:20px}
+.tile{flex:1;display:flex;flex-direction:column;gap:28px;padding:20px;border-radius:16px;background:rgba(255,255,255,.06);transition:background .4s,transform .5s var(--ease)}
+.tile:hover{background:rgba(255,255,255,.1);transform:translateY(-4px)}
+.tile .top{display:flex;justify-content:space-between;align-items:center}
+.tile .chip{width:40px;height:40px;border-radius:12px;background:rgba(255,105,0,.12);display:grid;place-items:center}
+.tile .top small{font-size:14px;opacity:.4}
+.tile b{font-size:16px;font-weight:500;line-height:1.35}
+.form-wrap{position:relative;width:397px;flex:none;margin-top:-21px}
+.ring{position:absolute;inset:-8px -8px auto;height:calc(100% + 400px);background:var(--navy);border-radius:24px 24px 0 0}
+.ring::before,.ring::after{content:"";position:absolute;top:calc(133px - 48px + 8px - 16px);width:16px;height:16px}
+.ring::before{left:-16px;background:radial-gradient(circle at 0 0,transparent 15.5px,var(--navy) 16px)}
+.ring::after{right:-16px;background:radial-gradient(circle at 100% 0,transparent 15.5px,var(--navy) 16px)}
+.form{position:relative;background:#fff;border-radius:16px;padding:40px 28px;display:flex;flex-direction:column;gap:28px}
+.prog .lab{display:flex;gap:8px;font-size:14px;font-weight:500;line-height:18px}
+.prog .lab b{font-weight:500;color:var(--orange)}
+.prog .lab span{color:var(--gray)}
+.bar{display:flex;gap:6px;margin-top:12px}
+.bar i{flex:1;height:4px;border-radius:2px;background:#eaeaea;position:relative;overflow:hidden}
+.bar i::after{content:"";position:absolute;inset:0;background:var(--orange);transform-origin:left;transform:scaleX(var(--p,0));transition:transform .8s var(--ease)}
+.field label{display:block;font-size:16px;font-weight:500;line-height:20px;margin-bottom:8px;color:var(--black)}
+.field input{width:100%;border:0;outline:0;background:var(--gray-light);border-radius:8px;padding:15px 16px;font:400 18px/24px var(--body);color:var(--black);box-shadow:inset 0 0 0 0 var(--orange);transition:box-shadow .3s,background .3s}
+.field input::placeholder{color:var(--gray)}
+.field input:focus{background:#fff;box-shadow:inset 0 0 0 2px var(--orange)}
+.form .btn{width:100%}
+
+/* ---------- FOOTER ---------- */
+.footer{background:var(--orange);overflow:hidden}
+.footer img{width:100%;height:auto}
+
+/* ---------- responsive ---------- */
+@media (max-width:1240px){
+  .nav-left{gap:16px}
+  .nav-links a{padding:6px 7px}
+  .block .media{width:58%}
+  .grid{grid-template-columns:1fr 1fr;column-gap:48px}
+  .row .label{width:42%}
+  .map{width:46%}
+}
+@media (max-width:1023px){
+  .nav-links,.pill-ghost{display:none}
+  .nav-burger{display:inline-flex}
+  .nav{padding:0 16px}
+  .nav-right{gap:8px;align-items:center;margin-left:auto;margin-right:8px}
+}
+@media (max-width:900px){
+  .hero-top,.intro,.block,.block.rev,.map-card,.faq-cols,.s8 .wrap,.partners{flex-direction:column;align-items:flex-start}
+  .aside{width:100%}
+  .hero-card{height:340px}
+  .hb-card{height:640px}
+  .hb-content h1{font-size:36px}
+  .hb-content p{font-size:17px;line-height:25px}
+  .facts{grid-template-columns:1fr 1fr}
+  .block .media,.map{width:100%;height:320px}
+  .h-80{font-size:52px;letter-spacing:-1px}
+  .h-56{font-size:40px}
+  .map-copy h2{font-size:44px}
+  .row{padding:24px;flex-wrap:wrap}
+  .row .label{width:100%}
+  .row .detail{order:3;flex-basis:100%}
+  .row .ico{position:absolute;right:24px;top:24px}
+  .row .stat{flex-wrap:wrap;gap:8px 16px}
+  .row .stat b{font-size:44px;line-height:1.1;white-space:normal}
+  .grid{grid-template-columns:1fr}
+  .timeline{flex-direction:column;align-items:stretch;height:auto}
+  .stage{height:auto!important;min-height:220px}
+  .logos{flex-wrap:wrap;gap:32px}
+  .faq-cols{gap:40px}
+  .faq-cols .h-56{position:static;width:auto}
+  .s8 h2{font-size:44px}
+  .tiles{flex-direction:column}
+  .form-wrap{width:100%;margin-top:40px}
+  .ring{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <div class="nav-left">
+    <a href="#top" aria-label="OCVIBE"><img src="assets/logo.svg" width="60" height="32" alt="OCVIBE"></a>
+    <nav class="nav-links">
+      <a href="#">About <svg width="12" height="12" viewBox="0 0 12 12"><path d="M3 7.5 6 4.5l3 3" stroke="#fff" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg></a>
+      <a href="#">Experiences <svg width="12" height="12" viewBox="0 0 12 12"><path d="M3 7.5 6 4.5l3 3" stroke="#fff" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg></a>
+      <a href="#">Dining <svg width="12" height="12" viewBox="0 0 12 12"><path d="M3 7.5 6 4.5l3 3" stroke="#fff" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg></a>
+      <a href="#">Hotel</a>
+      <a href="#">Office</a>
+      <a href="#">Special Events <svg width="12" height="12" viewBox="0 0 12 12"><path d="M3 7.5 6 4.5l3 3" stroke="#fff" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg></a>
+      <a href="#">News</a>
+    </nav>
+  </div>
+  <div class="nav-right">
+    <a class="pill pill-ghost" href="#brochure">Contact</a>
+    <a class="pill pill-orange" href="#brochure">Get the Brochure</a>
+  </div>
+  <button class="nav-burger" id="burger" aria-label="Open menu" aria-expanded="false"><span class="bars"><i></i><i></i></span><span class="mtxt">Menu</span></button>
+</header>
+<nav class="menu" id="menu">
+  <a href="#">About</a><a href="#">Experiences</a><a href="#">Dining</a><a href="#">Hotel</a><a href="#">Office</a><a href="#">Special Events</a><a href="#">News</a>
+  <a class="pill pill-orange" href="#brochure">Get the Brochure</a>
+</nav>
+
+<main id="top">
+  <!-- HERO (variant B) -->
+  <section class="hero-b">
+    <div class="hb-card" id="heroCard">
+      <img src="assets/hero.jpg" alt="The Weave, a mass-timber office building at OCVIBE">
+      <i class="hb-dim"></i><i class="hb-fade"></i><i class="hb-focus"></i>
+      <div class="hb-content">
+        <span class="glass" data-hero><i class="dot pulse"></i>The Weave opens Q3 2027.</span>
+        <h1 data-split>Class A office space in Orange County's new downtown.</h1>
+        <p data-hero>The Weave is 168,000 SF of mass-timber office space inside OCVIBE, Anaheim's new 100-acre district of restaurants, parks and live music. Pre-leasing now for 2027 and 2028 moves.</p>
+        <a class="btn btn-blue magnetic" href="#brochure" data-hero><span class="lbl"><span>Get the Brochure</span><span>Get the Brochure</span></span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- S2 (variant B, navy) -->
+  <section class="s2 s2-b">
+    <div class="wrap">
+      <div class="intro">
+        <h2 class="h-56" data-split>For midsize and large companies that want more than a parking lot.</h2>
+        <p data-fade>The Weave is the office at the center of OCVIBE, the $5 billion district the Samueli family is building around Honda Center with their own capital.</p>
+      </div>
+      <div class="facts">
+        <div class="fact"><b><span data-count="168000">168,000</span> SF</b><span>Class A office</span></div>
+        <div class="fact"><b><span data-count="50000">50,000</span> SF</b><span>Market hall downstairs, Katella Commons</span></div>
+        <div class="fact"><b><span data-count="20">20</span> acres</b><span>Parks, plus 3 miles of trails</span></div>
+        <div class="fact"><b><span data-count="4">4</span></b><span>Office floors</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S3 -->
+  <section class="s3">
+    <div class="wrap">
+      <h2 class="h-80" data-split>Orange County's first mass-timber office.</h2>
+      <div class="blocks">
+        <div class="block">
+          <div class="media"><img src="assets/b1.png" alt="Office interior with exposed wood ceilings"><span class="glass"><i class="dot"></i>LEED Gold certification, FSC-certified timber</span></div>
+          <div class="text"><h3>The natural warmth of wood, with a smaller carbon footprint.</h3><p>Mass timber gives The Weave exposed wood ceilings and columns, so the office feels calm, warm and close to nature. The building is designed to achieve LEED Gold certification, an easy fit for your company's sustainability goals.</p></div>
+        </div>
+        <div class="block rev">
+          <div class="media"><img src="assets/b2.png" alt="Outdoor terrace with seating and planting"><span class="glass"><i class="dot"></i>MERV 13 filtration, CO2 monitoring, operable windows</span></div>
+          <div class="text"><h3>Daylight, fresh air and terraces, so afternoons don't drag.</h3><p>Skylights and slim floor plates bring daylight deep into every floor. Windows open, and the air is refreshed 30% more than code requires. When a meeting needs a change of scene, take it to a terrace or the open-air stairs.</p></div>
+        </div>
+        <div class="block">
+          <div class="media"><img src="assets/b3.png" alt="Open office floor with timber ceiling"></div>
+          <div class="text"><h3>Flexible floors that grow with your team.</h3><p>Open, flexible floors make it easy to move between team work, focus time and private meetings. As your team grows or changes, the space adapts with it. Pre-leasing now means you plan the buildout from day one.</p></div>
+        </div>
+        <div class="block rev">
+          <div class="media"><img src="assets/b4.png" alt="ARTIC transit station at dusk"><span class="glass"><i class="dot"></i>On-site parking and EV charging. Metrolink and Amtrak at ARTIC</span></div>
+          <div class="text"><h3>Parking, EV charging and Metrolink, right at the door.</h3><p>Drive in and park in one of 8,000 connected spaces, with EV charging while you work. Or take Metrolink or Amtrak to ARTIC, a short walk away. Right off the 57, in the middle of Orange County.</p></div>
+        </div>
+      </div>
+      <div class="cta-band" data-band>
+        <i class="c1"></i><i class="c2"></i><i class="c3"></i>
+        <div class="t"><h4>Pre-leasing now for 2027 and 2028 moves.</h4><p>Floors are still open, so the earlier you talk, the more you can choose.</p></div>
+        <a class="btn btn-white magnetic" href="#brochure"><span class="lbl"><span>Get the Brochure</span><span>Get the Brochure</span></span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- S4 DISTRICT -->
+  <section class="s4">
+    <div class="wrap">
+      <div class="map-card" id="mapCard">
+        <div class="map-copy">
+          <div>
+            <h2 data-split>Lunch, parks and live music, steps from your desk.</h2>
+            <p data-fade>All opening around The Weave from early 2027, across OCVIBE's 100 acres.</p>
+          </div>
+          <a class="btn btn-blue magnetic" href="#brochure" data-fade><span class="lbl"><span>Get the Brochure</span><span>Get the Brochure</span></span></a>
+        </div>
+        <div class="map"><img src="assets/map.jpg" alt="OCVIBE district map with The Weave, Katella Commons, Honda Center and the concert hall"></div>
+      </div>
+
+      <div class="acc" id="acc">
+        <div class="glow" id="glow"></div>
+        <div class="row open">
+          <div class="label"><span class="num">01</span><span class="ttl">Lunch at the downstairs</span></div>
+          <div class="detail">
+            <div class="sum"><b>21</b> chef-driven kitchens and 6 bars</div>
+            <div class="panel"><div class="panel-in"><img src="assets/food.png" alt="Shakshuka served at Katella Commons"><div class="stat"><b>21</b><span>Katella Commons sits right below the office, with 21 chef-driven kitchens and 6 bars.</span></div></div></div>
+          </div>
+          <span class="ico"></span>
+        </div>
+        <div class="row">
+          <div class="label"><span class="num">02</span><span class="ttl">Take the meeting outside</span></div>
+          <div class="detail"><div class="sum"><b>20 acres</b> of parks, plus 3 miles of trails</div>
+            <div class="panel"><div class="panel-in"><img src="assets/acc-parks.png" alt="People walking through Urban Park"><div class="stat sm"><b>20 acres</b><span>Urban Park puts 20 acres of parks and plazas and 3 miles of trails right outside the door.</span></div></div></div></div>
+          <span class="ico"></span>
+        </div>
+        <div class="row">
+          <div class="label"><span class="num">03</span><span class="ttl">Host clients over dinner</span></div>
+          <div class="detail"><div class="sum"><b>Fall 2027</b> Roy Choi's Best Friend opens</div>
+            <div class="panel"><div class="panel-in"><img src="assets/acc-dinner.png" alt="Friends sharing dinner at a restaurant"><div class="stat sm"><b>Fall 2027</b><span>Roy Choi's Best Friend opens in fall 2027, alongside a live-fire restaurant from Chef Tim Hollingsworth and two Japanese concepts from Osen Hospitality.</span></div></div></div></div>
+          <span class="ico"></span>
+        </div>
+        <div class="row">
+          <div class="label"><span class="num">04</span><span class="ttl">Catch a game together</span></div>
+          <div class="detail"><div class="sum"><b>Honda Center</b> is a short walk away</div>
+            <div class="panel"><div class="panel-in"><img src="assets/acc-game.png" alt="Fans celebrating at a game"><div class="stat sm"><b>Honda Center</b><span>Honda Center, home of the Anaheim Ducks, is a short walk away.</span></div></div></div></div>
+          <span class="ico"></span>
+        </div>
+        <div class="row">
+          <div class="label"><span class="num">05</span><span class="ttl">See a show after work</span></div>
+          <div class="detail"><div class="sum"><b>5,000</b>-capacity concert hall, early 2027</div>
+            <div class="panel"><div class="panel-in"><img src="assets/acc-show.png" alt="Concert crowd at a live show"><div class="stat"><b>5,000</b><span>A 5,000-capacity concert hall designed by Populous opens next door in early 2027.</span></div></div></div></div>
+          <span class="ico"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S5 -->
+  <section class="s5">
+    <div class="wrap">
+      <h2 class="h-56" data-split>What a better office does for your company.</h2>
+      <p class="sub" data-fade>Your team, your candidates and your clients all notice.</p>
+      <div class="grid">
+        <div class="point">
+          <svg viewBox="0 0 64 64" fill="none" stroke="#D34D2A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M42.6673 32C42.6673 37.8911 37.8917 42.6667 32.0007 42.6667C26.1096 42.6667 21.334 37.8911 21.334 32C21.334 26.109 26.1096 21.3334 32.0007 21.3334C37.8917 21.3334 42.6673 26.109 42.6673 32Z"/><path d="M32 5.33333V10.6667"/><path d="M32 53.3333V58.6667"/><path d="M13.1467 13.1467L16.9067 16.9067"/><path d="M47.0938 47.0934L50.8537 50.8534"/><path d="M5.33398 32H10.6673"/><path d="M53.334 32H58.6673"/><path d="M16.9067 47.0933L13.1467 50.8533"/><path d="M50.8537 13.1466L47.0938 16.9066"/></svg>
+          <div><h3>People come in because they want to.</h3><p>Wood, daylight and fresh air make the office feel good to walk into, so coming in stops feeling like a requirement.</p></div>
+        </div>
+        <div class="point">
+          <svg viewBox="0 0 64 64" fill="none" stroke="#D34D2A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5.33398 24C7.45572 24 9.49055 24.8429 10.9908 26.3432C12.4911 27.8435 13.334 29.8783 13.334 32C13.334 34.1218 12.4911 36.1566 10.9908 37.6569C9.49055 39.1572 7.45572 40 5.33398 40V45.3334C5.33398 46.7479 5.89589 48.1044 6.89608 49.1046C7.89628 50.1048 9.25283 50.6667 10.6673 50.6667H53.334C54.7485 50.6667 56.105 50.1048 57.1052 49.1046C58.1054 48.1044 58.6673 46.7479 58.6673 45.3334V40C56.5456 40 54.5108 39.1572 53.0105 37.6569C51.5102 36.1566 50.6673 34.1218 50.6673 32C50.6673 29.8783 51.5102 27.8435 53.0105 26.3432C54.5108 24.8429 56.5456 24 58.6673 24V18.6667C58.6673 17.2522 58.1054 15.8957 57.1052 14.8955C56.105 13.8953 54.7485 13.3334 53.334 13.3334H10.6673C9.25283 13.3334 7.89628 13.8953 6.89608 14.8955C5.89589 15.8957 5.33398 17.2522 5.33398 18.6667V24Z"/><path d="M34.666 13.3334V18.6667"/><path d="M34.666 45.3334V50.6667"/><path d="M34.666 29.3334V34.6667"/></svg>
+          <div><h3>Team outings plan themselves.</h3><p>Celebrate a launch downstairs, take the team to a Ducks game, or host the holiday party without booking a bus.</p></div>
+        </div>
+        <div class="point">
+          <svg viewBox="0 0 64 64" fill="none" stroke="#D34D2A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M43.3067 20.6933L38.496 35.1227C38.2342 35.9082 37.793 36.622 37.2075 37.2075C36.622 37.793 35.9082 38.2342 35.1227 38.496L20.6933 43.3067L25.504 28.8773C25.7658 28.0918 26.207 27.378 26.7925 26.7925C27.378 26.207 28.0918 25.7658 28.8773 25.504L43.3067 20.6933Z"/><path d="M58.6673 32C58.6673 46.7276 46.7282 58.6667 32.0006 58.6667C17.2731 58.6667 5.33398 46.7276 5.33398 32C5.33398 17.2724 17.2731 5.33337 32.0006 5.33337C46.7282 5.33337 58.6673 17.2724 58.6673 32Z"/></svg>
+          <div><h3>No two workdays feel the same.</h3><p>A new kitchen at lunch, a walk through the park. When discovery is part of the workday, people stay curious, and teams that feel inspired tend to stick around.</p></div>
+        </div>
+        <div class="point">
+          <svg viewBox="0 0 64 64" fill="none" stroke="#D34D2A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M53.3327 26.6667C53.3327 39.9814 38.562 53.848 33.602 58.1307C33.1399 58.4782 32.5775 58.666 31.9993 58.666C31.4212 58.666 30.8588 58.4782 30.3967 58.1307C25.4367 53.848 10.666 39.9814 10.666 26.6667C10.666 21.0088 12.9136 15.5825 16.9144 11.5818C20.9152 7.58099 26.3414 5.33337 31.9993 5.33337C37.6573 5.33337 43.0835 7.58099 47.0843 11.5818C51.0851 15.5825 53.3327 21.0088 53.3327 26.6667Z"/><path d="M40 26.6667C40 31.0849 36.4183 34.6667 32 34.6667C27.5817 34.6667 24 31.0849 24 26.6667C24 22.2484 27.5817 18.6667 32 18.6667C36.4183 18.6667 40 22.2484 40 26.6667Z"/></svg>
+          <div><h3>Your reputation grows with your address.</h3><p>A mass-timber office, designed for LEED Gold, in Orange County's new downtown tells clients and candidates your company is going places.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S6 -->
+  <section class="s6">
+    <div class="wrap">
+      <h2 class="h-80" data-split>Get in early, while you can still choose your floor.</h2>
+      <p class="sub" data-fade>Pre-leasing is open while floors and terms are still taking shape. The first companies in help set the tone for the building.</p>
+      <div class="timeline" id="timeline">
+        <div class="stage st1"><i class="floors"></i><div class="head"><div class="meta"><i class="dot pulse"></i>01</div><div class="yr">Now</div></div><p>Pre-leasing open. Pick your floor and talk through your buildout.</p></div>
+        <div class="stage st2"><i class="floors"></i><div class="head"><div class="meta">02</div><div class="yr">Early 2027</div></div><p>Katella Commons, the concert hall and Urban Park are scheduled to open.</p></div>
+        <div class="stage st3"><i class="floors"></i><div class="head"><div class="meta">03</div><div class="yr">Q3 2027</div></div><p>The Weave opens. First tenants move in.</p></div>
+      </div>
+      <div class="partners">
+        <span>Founding partners</span>
+        <div class="logos">
+          <img src="assets/p-uci.svg" width="164" height="22" alt="UCI Health">
+          <img src="assets/p-choc.svg" width="116" height="50" alt="Rady Children's Health" style="opacity:.7">
+          <img src="assets/p-gallagher.svg" width="105" height="58" alt="Gallagher">
+          <img src="assets/p-cox.svg" width="82" height="28" alt="Cox">
+        </div>
+      </div>
+      <div class="cta-band" data-band>
+        <i class="c1"></i><i class="c2"></i><i class="c3"></i>
+        <div class="t"><h4>Most office moves are planned 12 to 24 months out.</h4><p>If yours is 2027 or 2028, now is the time to talk.</p></div>
+        <a class="btn btn-white magnetic" href="#brochure"><span class="lbl"><span>Get the Brochure</span><span>Get the Brochure</span></span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- S7 FAQ -->
+  <section class="s7">
+    <div class="wrap faq-cols">
+      <h2 class="h-56" data-split>Questions leasing hears first.</h2>
+      <div class="faq" id="faq">
+        <div class="q open"><button>When does The Weave open?<i></i></button><div class="a"><div class="a-in">The Weave is scheduled to open in Q3 2027. Leasing can walk you through the delivery schedule and how it lines up with your move date.</div></div></div>
+        <div class="q"><button>Will we be working next to construction?<i></i></button><div class="a"><div class="a-in">OCVIBE opens in phases through about 2033. Katella Commons, the concert hall and Urban Park are scheduled to open in early 2027, before The Weave opens in Q3 2027, so the places around you should already be open when you move in. Leasing can show you the full phasing plan.</div></div></div>
+        <div class="q"><button>How much space will we need?<i></i></button><div class="a"><div class="a-in">Most offices plan for 150 to 250 SF per person, so a 50-person team usually needs 7,500 to 12,500 SF. Suites at The Weave start at [X] SF and go up to full floors.</div></div></div>
+        <div class="q"><button>Where will our team park?<i></i></button><div class="a"><div class="a-in">8,000 connected parking spaces serve the district, with EV charging on site. For anyone who'd rather take the train, ARTIC puts Metrolink and Amtrak a short walk away.</div></div></div>
+        <div class="q"><button>Is mass timber safe?<i></i></button><div class="a"><div class="a-in">Thick timber chars on the outside in a fire, and that layer protects the structure inside. Mass timber is approved under building codes for buildings far taller than The Weave. Leasing can share the fire, acoustic and structural specs.</div></div></div>
+        <div class="q"><button>We're a smaller team. Is this for us?<i></i></button><div class="a"><div class="a-in">If you need a few desks or a small private office, Kiln opens a hospitality-driven flexible workspace on one floor of The Weave in 2027.<br><a href="#">Learn about Kiln →</a></div></div></div>
+        <div class="q"><button>What happens after I reach out?<i></i></button><div class="a"><div class="a-in">The leasing team at Cushman &amp; Wakefield gets back to you within [one business day]. Expect a short call about your team, timing and space, then floor plans and a virtual walkthrough.</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S8 BROCHURE -->
+  <section class="s8" id="brochure">
+    <div class="band" id="band"></div>
+    <div class="wrap">
+      <div class="s8-left">
+        <h2><span class="line l1"><span>Get the brochure</span></span><span class="line l2"><span>and talk to leasing.</span></span></h2>
+        <p class="lead" data-fade>Tell us a little about your team. Your brochure downloads right away, and leasing follows up directly.</p>
+        <div class="includes">
+          <span data-fade>Brochure includes</span>
+          <div class="tiles">
+            <div class="tile"><div class="top"><span class="chip"><img src="assets/l-layers.svg" width="20" height="20" alt=""></span><small>01</small></div><b>Floor plans and stacking plan</b></div>
+            <div class="tile"><div class="top"><span class="chip"><img src="assets/l-building.svg" width="20" height="20" alt=""></span><small>02</small></div><b>Building specs and sustainability</b></div>
+            <div class="tile"><div class="top"><span class="chip"><img src="assets/l-map.svg" width="20" height="20" alt=""></span><small>03</small></div><b>District map and opening timeline</b></div>
+          </div>
+        </div>
+      </div>
+      <div class="form-wrap" id="formWrap">
+        <div class="ring"></div>
+        <form class="form" id="form" onsubmit="return false">
+          <div class="prog"><div class="lab"><b>Step 1 of 2</b><span>·&nbsp; About you</span></div><div class="bar"><i id="seg1"></i><i id="seg2"></i></div></div>
+          <div class="field"><label for="f1">Full name</label><input id="f1" placeholder="Jane Cooper" autocomplete="off"></div>
+          <div class="field"><label for="f2">Work email</label><input id="f2" type="email" placeholder="jane@company.com" autocomplete="off"></div>
+          <div class="field"><label for="f3">Company</label><input id="f3" placeholder="Company name" autocomplete="off"></div>
+          <button class="btn btn-blue" type="submit" id="cont"><span class="lbl"><span>Continue</span><span>Continue</span></span></button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer"><img src="assets/footer.png" alt="OCVIBE footer: Countdown to OCVIBE, About, Careers, Special Events, Contact, FAQ, Newsletter"></footer>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+<script>
+(() => {
+  history.scrollRestoration = 'manual'; scrollTo(0, 0);
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const hasGsap = typeof gsap !== 'undefined';
+  if (hasGsap) gsap.registerPlugin(ScrollTrigger);
+
+  /* smooth scroll */
+  let lenis;
+  if (!reduce && typeof Lenis !== 'undefined' && hasGsap) {
+    lenis = new Lenis({ duration: 1.15, easing: t => 1 - Math.pow(1 - t, 4) });
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add(t => lenis.raf(t * 1000));
+    gsap.ticker.lagSmoothing(0);
+    document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
+      const t = document.querySelector(a.getAttribute('href'));
+      if (t) { e.preventDefault(); lenis.scrollTo(t, { offset: a.getAttribute('href') === '#top' ? 0 : -40, force: true }); }
+    }));
+  }
+
+  /* nav + mobile menu */
+  const nav = document.getElementById('nav'), burger = document.getElementById('burger');
+  const setMenu = on => { document.body.classList.toggle('menu-open', on); burger.querySelector('.mtxt').textContent = on ? 'Close' : 'Menu'; burger.setAttribute('aria-expanded', on); if (lenis) on ? lenis.stop() : lenis.start(); };
+  burger.addEventListener('click', () => setMenu(!document.body.classList.contains('menu-open')));
+  document.querySelectorAll('#menu a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+
+  /* split headings into masked lines */
+  function splitLines(el) {
+    const nodes = [...el.childNodes]; const words = [];
+    el.innerHTML = '';
+    nodes.forEach(n => {
+      const text = n.textContent; const isEm = n.nodeType === 1;
+      text.split(/(\s+)/).forEach(w => {
+        if (!w) return;
+        if (/^\s+$/.test(w)) { el.appendChild(document.createTextNode(' ')); return; }
+        const s = document.createElement(isEm ? 'em' : 'span'); s.textContent = w; s.style.display = 'inline-block';
+        el.appendChild(s); words.push(s);
+      });
+    });
+    const lines = []; let top = null, cur;
+    words.forEach(w => { if (w.offsetTop !== top) { top = w.offsetTop; cur = []; lines.push(cur); } cur.push(w); });
+    el.innerHTML = '';
+    lines.forEach(l => {
+      const line = document.createElement('span'); line.className = 'line';
+      const inner = document.createElement('span');
+      l.forEach((w, i) => { inner.appendChild(w); if (i < l.length - 1) inner.appendChild(document.createTextNode(' ')); });
+      line.appendChild(inner); el.appendChild(line);
+    });
+    return el.querySelectorAll('.line>span');
+  }
+
+  /* accordion helpers */
+  function setH(el, open, dur = .7) {
+    if (!hasGsap || reduce) { el.style.height = open ? 'auto' : '0px'; return; }
+    gsap.to(el, { height: open ? 'auto' : 0, duration: dur, ease: 'expo.inOut' });
+  }
+
+  /* things to do */
+  const acc = document.getElementById('acc'), glow = document.getElementById('glow');
+  const rows = [...acc.querySelectorAll('.row')];
+  function moveGlow(row) {
+    const y = row.offsetTop + row.offsetHeight / 2 - 260;
+    if (hasGsap) gsap.to(glow, { y, duration: 1.2, ease: 'power3.out' }); else glow.style.transform = `translateY(${y}px)`;
+  }
+  function openRow(row) {
+    const willOpen = !row.classList.contains('open');
+    rows.forEach(r => {
+      const on = r === row ? willOpen : false;
+      if (r.classList.contains('open') === on) return;
+      r.classList.toggle('open', on);
+      setH(r.querySelector('.panel'), on);
+      const sum = r.querySelector('.sum');
+      if (hasGsap && !reduce) gsap.to(sum, { height: on ? 0 : 'auto', opacity: on ? 0 : 1, duration: .6, ease: 'expo.inOut' });
+      else { sum.style.height = on ? '0px' : 'auto'; sum.style.opacity = on ? 0 : 1; }
+    });
+    setTimeout(() => moveGlow(willOpen ? row : rows[0]), 50);
+    if (hasGsap) setTimeout(() => ScrollTrigger.refresh(), 800);
+  }
+  rows.forEach(r => {
+    const open = r.classList.contains('open');
+    r.querySelector('.panel').style.height = open ? 'auto' : '0px';
+    const sum = r.querySelector('.sum'); sum.style.overflow = 'hidden';
+    if (open) { sum.style.height = '0px'; sum.style.opacity = 0; }
+    r.addEventListener('click', () => openRow(r));
+  });
+  requestAnimationFrame(() => moveGlow(rows[0]));
+
+  /* FAQ */
+  const qs = [...document.querySelectorAll('.q')];
+  qs.forEach(q => {
+    q.querySelector('.a').style.height = q.classList.contains('open') ? 'auto' : '0px';
+    q.querySelector('button').addEventListener('click', () => {
+      const willOpen = !q.classList.contains('open');
+      qs.forEach(o => { if (o !== q && o.classList.contains('open')) { o.classList.remove('open'); setH(o.querySelector('.a'), false, .6); } });
+      q.classList.toggle('open', willOpen); setH(q.querySelector('.a'), willOpen, .6);
+      if (hasGsap) setTimeout(() => ScrollTrigger.refresh(), 700);
+    });
+  });
+
+  /* form micro-interaction */
+  const seg1 = document.getElementById('seg1'), seg2 = document.getElementById('seg2');
+  const inputs = [...document.querySelectorAll('.field input')];
+  const fill = () => { seg1.style.setProperty('--p', Math.max(.08, inputs.filter(i => i.value.trim()).length / inputs.length)); };
+  inputs.forEach(i => i.addEventListener('input', fill));
+  document.getElementById('cont').addEventListener('click', () => { if (inputs.every(i => i.value.trim())) { seg1.style.setProperty('--p', 1); seg2.style.setProperty('--p', 1); } else { const e = inputs.find(i => !i.value.trim()); e.focus(); if (hasGsap) gsap.fromTo(e, { x: -6 }, { x: 0, duration: .5, ease: 'elastic.out(1,.3)' }); } });
+
+  /* magnetic buttons */
+  if (!reduce && matchMedia('(hover:hover)').matches) document.querySelectorAll('.magnetic').forEach(b => {
+    b.addEventListener('mousemove', e => { const r = b.getBoundingClientRect(); const x = e.clientX - r.left - r.width / 2, y = e.clientY - r.top - r.height / 2; b.style.transform = `translate(${x * .18}px,${y * .3}px)`; });
+    b.addEventListener('mouseleave', () => { b.style.transform = ''; });
+  });
+
+  if (!hasGsap || reduce) { fill(); return; }
+
+  /* ---------- MOTION ---------- */
+  const E = 'expo.out';
+  document.fonts.ready.then(() => {
+    const splits = new Map();
+    document.querySelectorAll('[data-split]').forEach(el => splits.set(el, splitLines(el)));
+
+    /* intro timeline */
+    const tl = gsap.timeline({ defaults: { ease: E } });
+    tl.from('#heroCard', { clipPath: 'inset(30% 30% 30% 30% round 12px)', duration: 1.7, ease: 'expo.inOut' }, 0)
+      .from('#heroCard>img', { scale: 1.4, duration: 2.4, ease: 'expo.out' }, .1)
+      .from('[data-hero]:first-child', { y: 20, opacity: 0, duration: 1 }, 1)
+      .from(splits.get(document.querySelector('.hb-content h1')), { yPercent: 110, duration: 1.3, stagger: .1 }, 1.05)
+      .from('.hb-content p, .hb-content .btn', { y: 24, opacity: 0, duration: 1, stagger: .12 }, 1.35);
+
+    setTimeout(() => { if (tl.progress() < 1) tl.progress(1); }, 4000);
+
+    /* hero: image drifts, copy lifts away as you scroll */
+    gsap.to('#heroCard>img', { yPercent: 8, ease: 'none', scrollTrigger: { trigger: '#heroCard', start: 'top top', end: 'bottom top', scrub: true } });
+    gsap.to('.hb-content', { y: -80, opacity: 0, ease: 'none', scrollTrigger: { trigger: '#heroCard', start: 'top top', end: 'bottom 30%', scrub: true } });
+
+    /* scroll-revealed headings */
+    splits.forEach((lines, el) => {
+      if (el.closest('.hero-b')) return;
+      gsap.from(lines, { yPercent: 110, duration: 1.2, stagger: .08, ease: E, scrollTrigger: { trigger: el, start: 'top 85%' } });
+    });
+    gsap.utils.toArray('[data-fade]').forEach(el => {
+      if (el.closest('.hb-content')) return;
+      gsap.from(el, { y: 28, opacity: 0, duration: 1.1, ease: E, scrollTrigger: { trigger: el, start: 'top 90%' } });
+    });
+
+    /* facts: lines draw, numbers count */
+    gsap.from('.fact', { '--draw': 0, duration: 1.4, stagger: .12, ease: 'expo.inOut', scrollTrigger: { trigger: '.facts', start: 'top 85%' } });
+    gsap.from('.fact>span', { y: 16, opacity: 0, duration: 1, stagger: .12, ease: E, delay: .3, scrollTrigger: { trigger: '.facts', start: 'top 85%' } });
+    document.querySelectorAll('[data-count]').forEach(el => {
+      const end = +el.dataset.count, o = { v: 0 };
+      gsap.to(o, { v: end, duration: 2, ease: 'power3.out', scrollTrigger: { trigger: '.facts', start: 'top 85%' }, onUpdate: () => el.textContent = Math.round(o.v).toLocaleString('en-US') });
+    });
+
+    /* building blocks: wipe in, image drifts */
+    gsap.utils.toArray('.block').forEach(b => {
+      const m = b.querySelector('.media'), img = m.querySelector('img'), rev = b.classList.contains('rev');
+      const st = { trigger: b, start: 'top 80%' };
+      gsap.from(m, { clipPath: rev ? 'inset(0 0 0 100%)' : 'inset(0 100% 0 0)', duration: 1.5, ease: 'expo.inOut', scrollTrigger: st });
+      gsap.from(img, { scale: 1.3, duration: 2, ease: E, scrollTrigger: st });
+      gsap.fromTo(img, { yPercent: -5 }, { yPercent: 5, ease: 'none', scrollTrigger: { trigger: b, start: 'top bottom', end: 'bottom top', scrub: true } });
+      gsap.from(b.querySelectorAll('.text>*'), { y: 40, opacity: 0, duration: 1.2, stagger: .1, ease: E, delay: .3, scrollTrigger: st });
+      const cap = m.querySelector('.glass');
+      if (cap) gsap.from(cap, { y: 20, opacity: 0, scale: .9, duration: 1, ease: 'back.out(1.6)', delay: 1, scrollTrigger: st });
+    });
+
+    /* CTA bands: shapes drift */
+    gsap.utils.toArray('[data-band]').forEach(band => {
+      gsap.from(band, { y: 60, opacity: 0, duration: 1.2, ease: E, scrollTrigger: { trigger: band, start: 'top 90%' } });
+      const tl2 = gsap.timeline({ scrollTrigger: { trigger: band, start: 'top bottom', end: 'bottom top', scrub: 1 } });
+      tl2.fromTo(band.querySelector('.c1'), { x: 80, y: -30 }, { x: -40, y: 30, ease: 'none' }, 0)
+         .fromTo(band.querySelector('.c2'), { x: -60 }, { x: 40, ease: 'none' }, 0)
+         .fromTo(band.querySelector('.c3'), { rotate: 0, scale: .8 }, { rotate: 90, scale: 1.15, ease: 'none' }, 0);
+    });
+
+    /* district */
+    gsap.from('#mapCard', { y: 80, opacity: 0, duration: 1.3, ease: E, scrollTrigger: { trigger: '#mapCard', start: 'top 85%' } });
+    gsap.from('.map', { clipPath: 'inset(10% 10% 10% 10% round 17px)', duration: 1.6, ease: 'expo.inOut', scrollTrigger: { trigger: '#mapCard', start: 'top 75%' } });
+    gsap.fromTo('.map img', { scale: 1.2 }, { scale: 1, ease: 'none', scrollTrigger: { trigger: '#mapCard', start: 'top bottom', end: 'bottom top', scrub: true } });
+    gsap.from('.row', { y: 50, opacity: 0, duration: 1.1, stagger: .08, ease: E, scrollTrigger: { trigger: '#acc', start: 'top 85%' } });
+
+    /* S5 icons draw */
+    gsap.utils.toArray('.point').forEach((p, i) => {
+      const paths = p.querySelectorAll('path');
+      paths.forEach(path => { const L = path.getTotalLength(); path.style.strokeDasharray = L; path.style.strokeDashoffset = L; });
+      const st = { trigger: p, start: 'top 85%' };
+      gsap.to(paths, { strokeDashoffset: 0, duration: 1.6, stagger: .05, ease: 'power2.inOut', delay: (i % 2) * .15, scrollTrigger: st });
+      gsap.from(p.querySelectorAll('h3,p'), { y: 30, opacity: 0, duration: 1.1, stagger: .1, ease: E, delay: .2 + (i % 2) * .15, scrollTrigger: st });
+    });
+
+    /* timeline: floors rise */
+    const stages = gsap.utils.toArray('.stage');
+    const ttl = gsap.timeline({ scrollTrigger: { trigger: '#timeline', start: 'top 80%' } });
+    ttl.from(stages, { scaleY: 0, duration: 1.4, stagger: .18, ease: 'expo.inOut' })
+       .from('.stage .head, .stage p', { y: 24, opacity: 0, duration: .9, stagger: .06, ease: E }, '-=.7')
+       .from('.stage .floors', { opacity: 0, duration: 1 }, '-=.9');
+    gsap.from('.partners>span, .logos img', { y: 20, opacity: 0, duration: 1, stagger: .08, ease: E, scrollTrigger: { trigger: '.partners', start: 'top 90%' } });
+
+    /* FAQ */
+    gsap.from('.q', { y: 30, opacity: 0, duration: 1, stagger: .06, ease: E, scrollTrigger: { trigger: '#faq', start: 'top 85%' } });
+
+    /* brochure */
+    const bt = gsap.timeline({ scrollTrigger: { trigger: '#brochure', start: 'top 75%' } });
+    bt.from('#band', { scaleY: 0, duration: 1.3, ease: 'expo.inOut' })
+      .from('.ring', { yPercent: 30, duration: 1.3, ease: 'expo.inOut' }, 0)
+      .from('#form', { y: 60, opacity: 0, duration: 1.2, ease: E }, .5)
+      .from('.s8 h2 .line>span', { yPercent: 110, duration: 1.1, stagger: .1, ease: E }, .45)
+      .from('.tile', { y: 40, opacity: 0, duration: 1, stagger: .1, ease: E }, .8)
+      .from('.field, .prog, #cont', { y: 16, opacity: 0, duration: .8, stagger: .06, ease: E }, .8)
+      .add(() => fill(), 1.4);
+
+    gsap.from('.footer img', { yPercent: -20, ease: 'none', scrollTrigger: { trigger: '.footer', start: 'top bottom', end: 'bottom bottom', scrub: true } });
+
+    ScrollTrigger.refresh();
+  });
+})();
+</script>
+</body>
+</html>
